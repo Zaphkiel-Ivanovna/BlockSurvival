@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="BlockSurvival:jar">
+    <output-path>$USER_HOME$/Desktop/Debug Server 1.12.2/plugins</output-path>
+    <root id="archive" name="BlockSurvival.jar">
+      <element id="module-output" name="BlockSurvival" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/baegmon/blocksurvival/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>
