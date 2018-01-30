@@ -13,9 +13,6 @@ public enum Global {
 
     private ArrayList<ArenaSign> signs = new ArrayList<>();
 
-    // this variable checks if the blocks will drop or just turn to air
-    private boolean blocksDrop = false;
-
     public BlockVector getLobby() {
         return lobby;
     }
@@ -24,20 +21,12 @@ public enum Global {
         return world;
     }
 
-    public boolean doBlocksDrop() {
-        return blocksDrop;
-    }
-
     public void setLobby(BlockVector lobby) {
         this.lobby = lobby;
     }
 
     public void setWorld(String world) {
         this.world = world;
-    }
-
-    public void setBlocksDrop(boolean blocksDrop) {
-        this.blocksDrop = blocksDrop;
     }
 
     public String getStringLobby(){

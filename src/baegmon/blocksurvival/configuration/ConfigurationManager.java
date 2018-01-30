@@ -61,7 +61,6 @@ public enum ConfigurationManager {
         Bukkit.getServer().getConsoleSender().sendMessage(Strings.PREFIX + ChatColor.GREEN + "Arenas configuration file (arenas.yml) was loaded!");
 
         if(configuration.contains("Game")){
-            Global.INSTANCE.setBlocksDrop(configuration.getBoolean("Game.BlocksDrop"));
             Global.INSTANCE.setWorld(configuration.getString("Game.Lobby.World"));
             Global.INSTANCE.setLobby(
                     new BlockVector(
@@ -103,7 +102,6 @@ public enum ConfigurationManager {
             }
 
         } else {
-            configuration.set("Game.BlocksDrop", Global.INSTANCE.doBlocksDrop());
             saveConfiguration();
         }
 
