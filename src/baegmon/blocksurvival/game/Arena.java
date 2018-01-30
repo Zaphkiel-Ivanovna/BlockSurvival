@@ -1,12 +1,17 @@
 package baegmon.blocksurvival.game;
 
 import baegmon.blocksurvival.BlockPlugin;
+import baegmon.blocksurvival.manager.PlayerInfoManager;
 import baegmon.blocksurvival.timer.Countdown;
 import baegmon.blocksurvival.timer.Game;
 import baegmon.blocksurvival.tools.ArenaUtils;
+import baegmon.blocksurvival.tools.PlayerInfo;
+import baegmon.blocksurvival.tools.SignType;
 import baegmon.blocksurvival.tools.Strings;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -27,6 +32,7 @@ public class Arena {
     private int difficulty; // difficulty of drop falling (0 = slowest, 5 = highest, default = 2)
     private boolean useFloor = false;
     private double floor; // y-value of the arena
+    private String type = "NONE";
     private BlockVector pos1; // position of corner of arena
     private BlockVector pos2; // position of corner of arena
     private int minPlayers = -1; // minimum number of players required to start arena
@@ -96,6 +102,8 @@ public class Arena {
     public boolean usingFloor(){ return useFloor; }
 
     public double getFloor() { return floor; }
+
+    public String getType() { return type; }
 
     public BlockVector getPos1() {
         return pos1;
@@ -173,6 +181,8 @@ public class Arena {
         this.floor = floor;
     }
 
+    public void setType(String type) { this.type = type; }
+
     public void setPos1(BlockVector pos1){
         this.pos1 = pos1;
     }
@@ -202,10 +212,16 @@ public class Arena {
     }
 
     public String getStringPos1(){
+        if(pos1 == null){
+            return "[POS1 NOT SET]";
+        }
         return "[" + pos1.getBlockX() + ", " + pos1.getBlockY() + ", " + pos1.getBlockZ() + "]";
     }
 
     public String getStringPos2(){
+        if(pos2 == null){
+            return "[POS2 NOT SET]";
+        }
         return "[" + pos2.getBlockX() + ", " + pos2.getBlockY() + ", " + pos2.getBlockZ() + "]";
     }
 
@@ -232,6 +248,11 @@ public class Arena {
     public void join(Player player){
         players.add(player.getUniqueId());
 
+        PlayerInfo info = new PlayerInfo(player);
+        PlayerInfoManager.INSTANCE.addInfo(player.getUniqueId(), info);
+
+        player.getInventory().clear();
+
         if(players.size() >= minPlayers){
 
             if(countdown.hasStarted()){
@@ -249,11 +270,17 @@ public class Arena {
             p.sendMessage(Strings.PREFIX + ChatColor.WHITE + player.getDisplayName() + ChatColor.AQUA + " has joined the arena!");
         }
 
+        player.setGameMode(GameMode.ADVENTURE);
+        player.teleport(ArenaUtils.getRandomLocation(world, pos1, pos2));
+        updateSigns();
     }
 
     public void leave(Player player){
 
         player.setLevel(0);
+
+        PlayerInfo info = PlayerInfoManager.INSTANCE.getInfo(player.getUniqueId());
+        info.restorePlayer();
 
         players.remove(player.getUniqueId());
 
@@ -289,6 +316,17 @@ public class Arena {
             }
         }
 
+        player.teleport(
+                new Location(
+                        Bukkit.getWorld(Global.INSTANCE.getWorld()),
+                        Global.INSTANCE.getLobby().getX(),
+                        Global.INSTANCE.getLobby().getY(),
+                        Global.INSTANCE.getLobby().getZ()
+                )
+        );
+
+        player.sendMessage(Strings.PREFIX + ChatColor.AQUA + "You have left " + ChatColor.WHITE + name + ChatColor.AQUA + " !");
+        updateSigns();
     }
 
     private Scoreboard generateScoreboard(){
@@ -420,28 +458,45 @@ public class Arena {
         }
     }
 
-    public void teleportPlayersToLobby(){
+    public void updateSigns(){
+        for(ArenaSign sign : Global.INSTANCE.getSigns()){
+            if(sign.getType() == SignType.JOIN  && sign.getArena().equals(name)){
+                Block block = Bukkit.getWorld(sign.getWorld()).getBlockAt(sign.getX(), sign.getY(), sign.getZ());
+
+                if(block != null && block.getState() instanceof Sign){
+                    Sign s = (Sign) block.getState();
+
+                    String[] lines = s.getLines();
+                    lines[2] = gameState.toString();
+                    lines[3] = players.size() + " / " + maxPlayers;
+                    s.update();
+                }
+            }
+        }
+    }
+
+    private void resetPlayers(){
         Location lobby = new Location(Bukkit.getWorld(world),
-                GlobalSettings.INSTANCE.getLobby().getX(),
-                GlobalSettings.INSTANCE.getLobby().getY(),
-                GlobalSettings.INSTANCE.getLobby().getZ());
+                Global.INSTANCE.getLobby().getX(),
+                Global.INSTANCE.getLobby().getY(),
+                Global.INSTANCE.getLobby().getZ());
 
         for(UUID id : players){
             Player player = Bukkit.getPlayer(id);
 
-            player.setGameMode(GameMode.ADVENTURE);
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-            player.setLevel(0);
+
+            PlayerInfo info = PlayerInfoManager.INSTANCE.getInfo(id);
+            info.restorePlayer();
+
             player.teleport(lobby);
         }
-
-        // TODO: RESTORE THEIR ITEMS
     }
 
     public void reset(){
         this.arenaState = ArenaState.DISABLED;
 
-        teleportPlayersToLobby();
+        resetPlayers();
 
         players.clear();
         remaining.clear();
@@ -451,7 +506,6 @@ public class Arena {
         game = new Game(this);
 
         // create runnable to restore the block states
-
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BlockPlugin.getPlugin(BlockPlugin.class), new Runnable() {
             @Override
             public void run() {
@@ -463,5 +517,7 @@ public class Arena {
                 gameState = GameState.WAITING;
             }
         });
+
+        updateSigns();
     }
 }

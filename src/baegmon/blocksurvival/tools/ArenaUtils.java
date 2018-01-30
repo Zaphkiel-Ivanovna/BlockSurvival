@@ -4,7 +4,6 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.util.BlockVector;
@@ -36,50 +35,19 @@ public class ArenaUtils {
         return location;
     }
 
-
-    public static Block getRandomBlock(String world, BlockVector pos1, BlockVector pos2) {
-
-        double minX = Math.min(pos1.getX(), pos2.getX());
-        double minY = Math.min(pos1.getY(), pos2.getY());
-        double minZ = Math.min(pos1.getZ(), pos2.getZ());
-
-        double maxX = Math.max(pos1.getX(), pos2.getX());
-        double maxY = Math.max(pos1.getY(), pos2.getY());
-        double maxZ = Math.max(pos1.getZ(), pos2.getZ());
-
-        Location location = new Location(Bukkit.getWorld(world), randomDouble(minX, maxX), randomDouble(minY, maxY), randomDouble(minZ, maxZ));
-        boolean notAir = false;
-
-        while(!notAir){
-            if(location.getBlock().getType() == Material.AIR){
-                location = new Location(Bukkit.getWorld(world), randomDouble(minX, maxX), randomDouble(minY, maxY), randomDouble(minZ, maxZ));
-            } else {
-                notAir = true;
-            }
-        }
-
-        return location.getBlock();
-    }
-
     public static boolean insideArena(Location playerLocation, BlockVector pos1, BlockVector pos2) {
         double minX = Math.min(pos1.getX(), pos2.getX());
         double minY = Math.min(pos1.getY(), pos2.getY());
         double minZ = Math.min(pos1.getZ(), pos2.getZ());
 
-        double maxX = Math.max(pos1.getX(), pos2.getX());
-        double maxY = Math.max(pos1.getY(), pos2.getY());
-        double maxZ = Math.max(pos1.getZ(), pos2.getZ());
+        double maxX = Math.max(pos1.getX(), pos2.getX()) + 0.5;
+        double maxZ = Math.max(pos1.getZ(), pos2.getZ()) + 0.5;
 
         double px = playerLocation.getX();
         double py = playerLocation.getY();
         double pz = playerLocation.getZ();
 
-
-        if( (px >= minX && px <= maxX) && (py >= minY) && (pz >= minZ && pz <= maxZ) ){
-            return true;
-        } else {
-            return false;
-        }
+        return (px >= minX && px <= maxX) && (py >= minY) && (pz >= minZ && pz <= maxZ);
     }
 
     private static double randomDouble(double min, double max) {

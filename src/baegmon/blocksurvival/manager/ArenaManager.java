@@ -10,6 +10,8 @@ public enum ArenaManager {
 
     private HashMap<String, Arena> arenas = new HashMap<>();
 
+    public boolean doesArenaExist(String arenaName){ return arenas.containsKey(arenaName); }
+
     public HashMap<String, Arena> getArenas() {
         return arenas;
     }

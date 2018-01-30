@@ -8,16 +8,12 @@ import baegmon.blocksurvival.tools.Strings;
 
 import org.bukkit.*;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
-import org.bukkit.material.MaterialData;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -26,7 +22,7 @@ public class Game extends BukkitRunnable {
     private Arena arena;
     private ArrayList<BlockState> blocks = new ArrayList<>();
 
-    private Elimination elimination = new Elimination();
+    //private Elimination elimination = new Elimination();
 
     private int dropCounter = 0;
 
@@ -83,22 +79,60 @@ public class Game extends BukkitRunnable {
         }
 
         this.runTaskTimer(BlockPlugin.getPlugin(BlockPlugin.class), 0L, tick);
-        this.elimination.runTaskTimer(BlockPlugin.getPlugin(BlockPlugin.class), 0L, 5L);
-
+        //this.elimination.runTaskTimer(BlockPlugin.getPlugin(BlockPlugin.class), 0L, 5L);
     }
 
     @Override
     public void run() {
 
+        if(blocks.size() > 0 && arena.getGameState() == GameState.STARTED){
+
+            if(arena.getSnapshotBlocks().size() > dropCounter){
+
+                BlockState state = blocks.get(ThreadLocalRandom.current().nextInt(blocks.size()));
+
+                Location location = state.getLocation();
+                location.setX(location.getBlockX() + 0.5);
+                location.setZ(location.getBlockZ() + 0.5);
+
+                blocks.remove(state);
+                state.getBlock().setType(Material.AIR);
+
+                /* Use this if you decide to re-enable falling blocks
+                MaterialData data = new MaterialData(state.getType());
+                */
+
+                dropCounter++;
+            }
+        }
+    }
+
+    public void eliminatePlayer(UUID id){
+        if(arena.getGameState() == GameState.STARTED && arena.getRemaining().contains(id)){
+            arena.getRemaining().remove(id);
+
+            Player player = Bukkit.getPlayer(id);
+            player.setGameMode(GameMode.SPECTATOR);
+
+            arena.sendMessage(Strings.PREFIX + ChatColor.WHITE + player.getDisplayName() + ChatColor.AQUA + " has been eliminated!");
+            arena.updateScoreboard();
+
+            if(arena.getRemaining().size() == 1){
+                arena.setGameState(GameState.FINISHED);
+                arenaComplete();
+            }
+        }
+    }
+
+    private void arenaComplete(){
+
         if(arena.getGameState() == GameState.FINISHED){
 
             arena.setGameState(GameState.RESTORING);
-
             arena.removeScoreboard();
 
             Player winner = Bukkit.getPlayer(arena.getRemaining().iterator().next());
             arena.sendTitle(winner.getDisplayName() + " has won!", "", 120);
-            winner.setGameMode(GameMode.SPECTATOR);
 
             Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(BlockPlugin.getPlugin(BlockPlugin.class), new Runnable(){
                 int counter = 0;
@@ -117,74 +151,10 @@ public class Game extends BukkitRunnable {
             }, 0, 20L);
 
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BlockPlugin.getPlugin(BlockPlugin.class), () -> {
-                elimination.cancel();
                 cancel();
                 arena.reset();
             }, 140L);
 
-        }
-
-        if(blocks.size() > 0 && arena.getGameState() == GameState.STARTED){
-
-            if(arena.getSnapshotBlocks().size() > dropCounter){
-
-                BlockState state = blocks.get(ThreadLocalRandom.current().nextInt(blocks.size()));
-
-                Location location = state.getLocation();
-                location.setX(location.getBlockX() + 0.5);
-                location.setZ(location.getBlockZ() + 0.5);
-
-                blocks.remove(state);
-
-                MaterialData data = new MaterialData(state.getType());
-                state.getBlock().setType(Material.AIR);
-
-                FallingBlock fa = Bukkit.getWorld(arena.getWorld()).spawnFallingBlock(
-                        location,
-                        data);
-
-                fa.setDropItem(false);
-                fa.setMetadata("BlockSurvival", new FixedMetadataValue(BlockPlugin.getPlugin(BlockPlugin.class), "BlockSurvival"));
-
-                dropCounter++;
-
-            }
-
-        }
-
-    }
-
-    public class Elimination extends BukkitRunnable {
-
-        @Override
-        public void run() {
-
-            // only check if the game is currently running
-            if(arena.getGameState() == GameState.STARTED && arena.usingFloor()){
-
-                for (Iterator<UUID> iterator = arena.getRemaining().iterator(); iterator.hasNext();) {
-
-                    UUID id = iterator.next();
-
-                    Player player = Bukkit.getPlayer(id);
-
-                    if(player.getLocation().getY() <= arena.getFloor()){
-                        iterator.remove();
-                        arena.getSpectating().add(id);
-                        player.setGameMode(GameMode.SPECTATOR);
-
-                        arena.sendMessage(Strings.PREFIX + ChatColor.WHITE + player.getDisplayName() + ChatColor.AQUA + " has been eliminated!");
-
-                    }
-                }
-
-                arena.updateScoreboard();
-
-                if(arena.getRemaining().size() == 1){
-                    arena.setGameState(GameState.FINISHED);
-                }
-
-            }
         }
     }
 }

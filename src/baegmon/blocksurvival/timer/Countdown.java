@@ -62,7 +62,8 @@ public class Countdown extends BukkitRunnable {
                         arena.alertPlayers(countdown, Sound.BLOCK_NOTE_PLING, ChatColor.RED + "1", "");
                         return;
                     case 0:
-                        arena.alertPlayers(countdown, Sound.ENTITY_PLAYER_LEVELUP, "", ChatColor.RED + "Blocks are now falling!");
+                        arena.alertPlayers(countdown, Sound.ENTITY_PLAYER_LEVELUP, "", ChatColor.RED + "Survive!");
+                        arena.updateSigns();
                         arena.getGame().start(arena.getDifficulty());
                         this.cancel();
                         return;

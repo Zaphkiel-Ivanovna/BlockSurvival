@@ -2,8 +2,12 @@ package baegmon.blocksurvival.configuration;
 
 import baegmon.blocksurvival.BlockPlugin;
 import baegmon.blocksurvival.game.Arena;
-import baegmon.blocksurvival.game.GlobalSettings;
+import baegmon.blocksurvival.game.ArenaSign;
+import baegmon.blocksurvival.game.Global;
 import baegmon.blocksurvival.manager.ArenaManager;
+import baegmon.blocksurvival.tools.NumberUtils;
+import baegmon.blocksurvival.tools.SignType;
+import baegmon.blocksurvival.tools.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,10 +21,11 @@ public enum ConfigurationManager {
 
     INSTANCE;
 
-    private BlockPlugin plugin = BlockPlugin.getPlugin(BlockPlugin.class);
+    private static BlockPlugin plugin = BlockPlugin.getPlugin(BlockPlugin.class);
 
     private FileConfiguration configuration;
     private FileConfiguration arenaConfiguration;
+
     private File arenaFile;
     private File configFile;
 
@@ -37,7 +42,7 @@ public enum ConfigurationManager {
             try{
                 configFile.createNewFile();
             } catch (IOException e){
-                Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[BlockSurvival] Could not create config.yml");
+                Bukkit.getServer().getConsoleSender().sendMessage(Strings.PREFIX + ChatColor.RED + "Could not create config.yml");
             }
         }
 
@@ -45,29 +50,60 @@ public enum ConfigurationManager {
             try{
                 arenaFile.createNewFile();
             } catch (IOException e){
-                Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[BlockSurvival] Could not create arenas.yml");
+                Bukkit.getServer().getConsoleSender().sendMessage(Strings.PREFIX + ChatColor.RED + "Could not create arenas.yml");
             }
         }
-
 
         configuration = YamlConfiguration.loadConfiguration(configFile);
         arenaConfiguration = YamlConfiguration.loadConfiguration(arenaFile);
 
-        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[BlockSurvival] Plugin configuration file (config.yml) was loaded!");
-        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[BlockSurvival] Arenas configuration file (arenas.yml) was loaded!");
+        Bukkit.getServer().getConsoleSender().sendMessage( Strings.PREFIX + ChatColor.GREEN + "Plugin configuration file (config.yml) was loaded!");
+        Bukkit.getServer().getConsoleSender().sendMessage(Strings.PREFIX + ChatColor.GREEN + "Arenas configuration file (arenas.yml) was loaded!");
 
         if(configuration.contains("Game")){
-            GlobalSettings.INSTANCE.setBlocksDrop(configuration.getBoolean("Game.BlocksDrop"));
-            GlobalSettings.INSTANCE.setWorld(configuration.getString("Game.World"));
-            GlobalSettings.INSTANCE.setLobby(
+            Global.INSTANCE.setBlocksDrop(configuration.getBoolean("Game.BlocksDrop"));
+            Global.INSTANCE.setWorld(configuration.getString("Game.Lobby.World"));
+            Global.INSTANCE.setLobby(
                     new BlockVector(
                             configuration.getInt("Game.Lobby.x"),
                             configuration.getInt("Game.Lobby.y"),
                             configuration.getInt("Game.Lobby.z")
                     )
             );
+
+            if(configuration.contains("Game.Signs")){
+                for(String key : configuration.getConfigurationSection("Game.Signs").getKeys(false)){
+                    boolean flag = NumberUtils.isInteger(key);
+
+                    if(flag){
+
+                        ArenaSign sign = new ArenaSign(Integer.parseInt(key));
+
+                        String type = configuration.getString("Game.Signs." + key + ".Type");
+
+                        if(type.equalsIgnoreCase("LEAVE")){
+                            sign.setType(SignType.LEAVE);
+                            sign.setWorld(configuration.getString("Game.Signs." + key + ".World"));
+                            sign.setX(configuration.getInt("Game.Signs." + key + ".x"));
+                            sign.setY(configuration.getInt("Game.Signs." + key + ".y"));
+                            sign.setZ(configuration.getInt("Game.Signs." + key + ".z"));
+                        } else if (type.equalsIgnoreCase("JOIN")){
+                            sign.setType(SignType.JOIN);
+                            sign.setWorld(configuration.getString("Game.Signs." + key + ".World"));
+                            sign.setArena(configuration.getString("Game.Signs." + key + ".Arena"));
+                            sign.setX(configuration.getInt("Game.Signs." + key + ".x"));
+                            sign.setY(configuration.getInt("Game.Signs." + key + ".y"));
+                            sign.setZ(configuration.getInt("Game.Signs." + key + ".z"));
+                        }
+
+                        Global.INSTANCE.addSign(sign);
+                    }
+
+                }
+            }
+
         } else {
-            configuration.set("Game.BlocksDrop", GlobalSettings.INSTANCE.doBlocksDrop());
+            configuration.set("Game.BlocksDrop", Global.INSTANCE.doBlocksDrop());
             saveConfiguration();
         }
 
@@ -100,6 +136,7 @@ public enum ConfigurationManager {
                 arena.setWait(arenaConfiguration.getInt("Arenas." + key + ".LobbyTime"));
                 arena.setFloorUsage(arenaConfiguration.getBoolean("Arenas." + key + ".UsingFloor"));
                 arena.setFloor(arenaConfiguration.getDouble("Arenas." + key + ".Floor"));
+                arena.setType(arenaConfiguration.getString("Arenas." + key + ".Type"));
 
                 arena.saveArenaBlocks();
 
@@ -121,7 +158,7 @@ public enum ConfigurationManager {
         try {
             configuration.save(configFile);
         } catch (IOException e){
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[BlockSurvival] Plugin configuration file (config.yml) was created!");
+            Bukkit.getServer().getConsoleSender().sendMessage(Strings.PREFIX + ChatColor.RED + "Plugin configuration file (config.yml) could not be saved!");
         }
     }
 
@@ -129,20 +166,7 @@ public enum ConfigurationManager {
         try {
             arenaConfiguration.save(arenaFile);
         } catch (IOException e){
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[BlockSurvival] Arenas configuration file (arenas.yml) was created!");
+            Bukkit.getServer().getConsoleSender().sendMessage(Strings.PREFIX + ChatColor.RED + "Arenas configuration file (arenas.yml) could not be saved!");
         }
     }
-
-    public void reload(){
-        if(configuration != null && arenaConfiguration != null){
-            configuration = YamlConfiguration.loadConfiguration(configFile);
-            arenaConfiguration = YamlConfiguration.loadConfiguration(arenaFile);
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[BlockSurvival] Plugin configuration file (config.yml) was created!");
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[BlockSurvival] Arenas configuration file (arenas.yml) was created!");
-        } else {
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[BlockSurvival] Plugin configuration file (config.yml) was created!");
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[BlockSurvival] Arenas configuration file (arenas.yml) was created!");
-        }
-    }
-
 }
