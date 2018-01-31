@@ -10,6 +10,7 @@ import baegmon.blocksurvival.tools.SignType;
 import baegmon.blocksurvival.tools.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.BlockVector;
@@ -116,6 +117,19 @@ public enum ConfigurationManager {
                 arena.setMinPlayers(arenaConfiguration.getInt("Arenas." + key + ".MinimumPlayers"));
                 arena.setMaxPlayers(arenaConfiguration.getInt("Arenas." + key + ".MaximumPlayers"));
 
+
+                if(arenaConfiguration.contains("Arenas." + key + ".Lobby")){
+                    arena.setLobby(
+                            new Location(
+                                    Bukkit.getWorld(arenaConfiguration.getString("Arenas." + key + ".Lobby.World")),
+                                    arenaConfiguration.getDouble("Arenas." + key + ".Lobby.x"),
+                                    arenaConfiguration.getDouble("Arenas." + key + ".Lobby.y"),
+                                    arenaConfiguration.getDouble("Arenas." + key + ".Lobby.z")
+                            )
+                    );
+                }
+
+
                 arena.setPos1(
                         new BlockVector(
                                 arenaConfiguration.getInt("Arenas." + key + ".Position1.x"),
@@ -140,6 +154,12 @@ public enum ConfigurationManager {
 
                 ArenaManager.INSTANCE.addArena(arena.getName(), arena);
 
+            }
+        }
+
+        for(Arena arena : ArenaManager.INSTANCE.getArenas().values()){
+            if(arena != null){
+                arena.updateSigns();
             }
         }
     }

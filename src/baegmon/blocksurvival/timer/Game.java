@@ -22,8 +22,6 @@ public class Game extends BukkitRunnable {
     private Arena arena;
     private ArrayList<BlockState> blocks = new ArrayList<>();
 
-    //private Elimination elimination = new Elimination();
-
     private int dropCounter = 0;
 
     public Game(Arena arena){
@@ -72,14 +70,13 @@ public class Game extends BukkitRunnable {
             Player player = Bukkit.getPlayer(id);
             player.setScoreboard(arena.generateGameScoreboard());
 
-            // warp players back into arena that somehow managed to exit the arena area
+            // teleport players into a random position inside of the arena
             if(!ArenaUtils.insideArena(player.getLocation(), arena.getPos1(), arena.getPos2())){
                 player.teleport(ArenaUtils.getRandomLocation(arena.getWorld(), arena.getPos1(), arena.getPos2()));
             }
         }
 
         this.runTaskTimer(BlockPlugin.getPlugin(BlockPlugin.class), 0L, tick);
-        //this.elimination.runTaskTimer(BlockPlugin.getPlugin(BlockPlugin.class), 0L, 5L);
     }
 
     @Override
@@ -107,11 +104,10 @@ public class Game extends BukkitRunnable {
         }
     }
 
-    public void eliminatePlayer(UUID id){
-        if(arena.getGameState() == GameState.STARTED && arena.getRemaining().contains(id)){
-            arena.getRemaining().remove(id);
+    public void eliminatePlayer(Player player){
+        if(arena.getGameState() == GameState.STARTED && arena.getRemaining().contains(player.getUniqueId())){
+            arena.getRemaining().remove(player.getUniqueId());
 
-            Player player = Bukkit.getPlayer(id);
             player.setGameMode(GameMode.SPECTATOR);
 
             arena.sendMessage(Strings.PREFIX + ChatColor.WHITE + player.getDisplayName() + ChatColor.AQUA + " has been eliminated!");
@@ -121,6 +117,15 @@ public class Game extends BukkitRunnable {
                 arena.setGameState(GameState.FINISHED);
                 arenaComplete();
             }
+        }
+    }
+
+    public void playerLeave(Player player){
+        if(arena.getRemaining().size() == 1){
+            arena.getRemaining().remove(player.getUniqueId());
+            arena.updateScoreboard();
+            arena.setGameState(GameState.FINISHED);
+            arenaComplete();
         }
     }
 

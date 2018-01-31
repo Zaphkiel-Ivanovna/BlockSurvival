@@ -37,10 +37,12 @@ public class Countdown extends BukkitRunnable {
                     arena.sendTitle(ChatColor.GREEN + "Game Starting!", "");
                 }
 
-                if(arena.getMinPlayers() > arena.getPlayers().size()){
-                    arena.setGameState(GameState.WAITING);
-                    arena.setLevelCountdown(0);
-                    cancel();
+                if(arena.getMinPlayers() > arena.getPlayers().size() && arena.getGameState() == GameState.COUNTDOWN){
+                    if(!arena.isForceStarted()){
+                        arena.setGameState(GameState.WAITING);
+                        arena.setLevelCountdown(0);
+                        cancel();
+                    }
                 }
 
                 countdown--;

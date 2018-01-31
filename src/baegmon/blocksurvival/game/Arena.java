@@ -33,6 +33,7 @@ public class Arena {
     private boolean useFloor = false;
     private double floor; // y-value of the arena
     private String type = "NONE";
+    private Location lobby;
     private BlockVector pos1; // position of corner of arena
     private BlockVector pos2; // position of corner of arena
     private int minPlayers = -1; // minimum number of players required to start arena
@@ -45,6 +46,7 @@ public class Arena {
     private GameState gameState;
 
     // Tasks that will run the arena
+    private boolean forceStarted = true;
     private Countdown countdown = new Countdown(this);
     private Game game = new Game(this);
 
@@ -104,6 +106,10 @@ public class Arena {
     public double getFloor() { return floor; }
 
     public String getType() { return type; }
+
+    public Location getLobby() {
+        return lobby;
+    }
 
     public BlockVector getPos1() {
         return pos1;
@@ -183,6 +189,8 @@ public class Arena {
 
     public void setType(String type) { this.type = type; }
 
+    public void setLobby(Location lobby){ this.lobby =  lobby; }
+
     public void setPos1(BlockVector pos1){
         this.pos1 = pos1;
     }
@@ -211,6 +219,13 @@ public class Arena {
         this.remaining = remaining;
     }
 
+    public String getLobbyString(){
+        if(lobby == null) {
+            return "[LOBBY NOT SET]";
+        }
+        return "[" + lobby.getBlockX() + ", " + lobby.getBlockY() + ", "  + lobby.getBlockZ() + "]";
+    }
+
     public String getStringPos1(){
         if(pos1 == null){
             return "[POS1 NOT SET]";
@@ -223,6 +238,14 @@ public class Arena {
             return "[POS2 NOT SET]";
         }
         return "[" + pos2.getBlockX() + ", " + pos2.getBlockY() + ", " + pos2.getBlockZ() + "]";
+    }
+
+    public boolean isForceStarted(){
+        return forceStarted;
+    }
+
+    public boolean isLobbyValid(){
+        return lobby != null && lobby.getBlockX() != 0 && lobby.getBlockY() != 0 && lobby.getBlockZ() != 0;
     }
 
     public boolean isPos1Valid(){
@@ -245,6 +268,26 @@ public class Arena {
         return arenaState == ArenaState.ENABLED && isWorldValid() && isPlayerRequirementsValid() && isPos1Valid() && isPos2Valid() && difficulty > 0;
     }
 
+    public void forceStart(){
+        forceStarted = true;
+        startCountdown();
+
+        Scoreboard scoreboard = generateScoreboard();
+
+        for(UUID id : players){
+            Player p = Bukkit.getPlayer(id);
+            p.setScoreboard(scoreboard);
+        }
+    }
+
+    private void startCountdown(){
+        if(countdown.hasStarted()){
+            countdown = new Countdown(this);
+        }
+
+        countdown.start(wait);
+    }
+
     public void join(Player player){
         players.add(player.getUniqueId());
 
@@ -254,12 +297,7 @@ public class Arena {
         player.getInventory().clear();
 
         if(players.size() >= minPlayers){
-
-            if(countdown.hasStarted()){
-                countdown = new Countdown(this);
-            }
-
-            countdown.start(wait);
+            startCountdown();
         }
 
         Scoreboard scoreboard = generateScoreboard();
@@ -271,7 +309,14 @@ public class Arena {
         }
 
         player.setGameMode(GameMode.ADVENTURE);
-        player.teleport(ArenaUtils.getRandomLocation(world, pos1, pos2));
+
+        if(lobby == null){
+            // if no lobby set, teleport player to random location inside of arena
+            player.teleport(ArenaUtils.getRandomLocation(world, pos1, pos2));
+        } else {
+            player.teleport(lobby);
+        }
+
         updateSigns();
     }
 
@@ -327,6 +372,7 @@ public class Arena {
 
         player.sendMessage(Strings.PREFIX + ChatColor.AQUA + "You have left " + ChatColor.WHITE + name + ChatColor.AQUA + " !");
         updateSigns();
+
     }
 
     private Scoreboard generateScoreboard(){
@@ -364,7 +410,7 @@ public class Arena {
 
         int counter = 1;
 
-        if(minPlayers > players.size()){
+        if(minPlayers > players.size() && !forceStarted){
             Score line7 = objective.getScore(ChatColor.RED + "" + ChatColor.ITALIC + "Need at least " + minPlayers + " players!");
             line7.setScore(1);
             counter--;
@@ -495,6 +541,7 @@ public class Arena {
 
     public void reset(){
         this.arenaState = ArenaState.DISABLED;
+        forceStarted = false;
 
         resetPlayers();
 
@@ -515,6 +562,7 @@ public class Arena {
 
                 arenaState = ArenaState.ENABLED;
                 gameState = GameState.WAITING;
+                updateSigns();
             }
         });
 

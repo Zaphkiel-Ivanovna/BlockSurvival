@@ -17,6 +17,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
@@ -59,6 +60,8 @@ public class ArenaListener implements Listener {
                     } else {
                         event.setCancelled(true);
                     }
+
+                    break;
                 }
             }
 
@@ -77,6 +80,7 @@ public class ArenaListener implements Listener {
 
                     if(insideArena){
                         event.setCancelled(true);
+                        break;
                     }
                 }
             }
@@ -105,20 +109,30 @@ public class ArenaListener implements Listener {
                     // if player is waiting inside of an arena they should take no damage
                     if(arena.getGameState() == GameState.WAITING || arena.getGameState() == GameState.COUNTDOWN){
                         event.setCancelled(true);
-                        player.teleport(ArenaUtils.getRandomLocation(
-                                arena.getWorld(),
-                                arena.getPos1(),
-                                arena.getPos2()));
+
+                        if(arena.getLobby() == null){
+                            player.teleport(ArenaUtils.getRandomLocation(
+                                    arena.getWorld(),
+                                    arena.getPos1(),
+                                    arena.getPos2()));
+                        } else {
+                            player.teleport(arena.getLobby());
+                        }
+
                     } else if (arena.getGameState() == GameState.STARTED){
 
                         String type = arena.getType();
 
                         if(type.equalsIgnoreCase("VOID") && event.getCause() == EntityDamageEvent.DamageCause.VOID){
-                            arena.getGame().eliminatePlayer(player.getUniqueId());
+                            arena.getGame().eliminatePlayer(player);
                         } else if (type.equalsIgnoreCase("LAVA") && event.getCause() == EntityDamageEvent.DamageCause.LAVA){
-                            arena.getGame().eliminatePlayer(player.getUniqueId());
+                            arena.getGame().eliminatePlayer(player);
                         }
+                    } else if (arena.getGameState() == GameState.FINISHED){
+                        event.setCancelled(true);
                     }
+
+                    break;
                 }
             }
         }
@@ -132,6 +146,7 @@ public class ArenaListener implements Listener {
             for(Arena arena : ArenaManager.INSTANCE.getArenas().values()){
                 if(arena != null && arena.playerInsideArena(player)){
                     event.setCancelled(true);
+                    break;
                 }
             }
         }
@@ -150,7 +165,24 @@ public class ArenaListener implements Listener {
             // check player below y-level limit set by arena
             // check player not spectator
             if(arena != null && arena.playerInsideArena(player) && arena.getGameState() == GameState.STARTED && player.getGameMode() != GameMode.SPECTATOR && arena.usingFloor() && player.getLocation().getY() <= arena.getFloor()) {
-                arena.getGame().eliminatePlayer(player.getUniqueId());
+                arena.getGame().eliminatePlayer(player);
+                break;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+
+        for(Arena arena : ArenaManager.INSTANCE.getArenas().values()){
+            if(arena != null && arena.playerInsideArena(player)) {
+                arena.leave(player);
+
+                if(arena.getGameState() == GameState.STARTED){
+                    arena.getGame().playerLeave(player);
+                }
+                break;
             }
         }
     }

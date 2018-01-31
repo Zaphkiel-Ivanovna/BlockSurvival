@@ -3,11 +3,13 @@ package baegmon.blocksurvival.command;
 import baegmon.blocksurvival.configuration.ConfigurationManager;
 import baegmon.blocksurvival.game.Arena;
 import baegmon.blocksurvival.game.ArenaState;
+import baegmon.blocksurvival.game.GameState;
 import baegmon.blocksurvival.game.Global;
 import baegmon.blocksurvival.manager.ArenaManager;
 import baegmon.blocksurvival.tools.NumberUtils;
 import baegmon.blocksurvival.tools.Strings;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -39,6 +41,8 @@ public class BlockSurvivalCommand implements CommandExecutor {
 
                     commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Arena Setup Commands");
 
+                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "setmainlobby: " + ChatColor.WHITE + "set current player position as the return point when a game finishes or player exits an arena");
+
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "status <arena>: " + ChatColor.WHITE + "check the setup status of an arena");
 
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "create <arena>: " + ChatColor.WHITE + "create an <arena>");
@@ -47,7 +51,8 @@ public class BlockSurvivalCommand implements CommandExecutor {
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "enable <arena>: " + ChatColor.WHITE + "enable an <arena>");
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "disable <arena>: " +  ChatColor.WHITE + "disable an <arena>");
 
-                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "setmainlobby: " + ChatColor.WHITE + "set current player position as point to return when game finish or player exits an arena");
+                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "lobby <arena>: " + ChatColor.WHITE + "set position as the waiting lobby of <arena>");
+
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "pos1 <arena>: " + ChatColor.WHITE + "set position #1 of arena field");
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "pos2 <arena>: " + ChatColor.WHITE + "set position #2 of arena field");
 
@@ -55,15 +60,16 @@ public class BlockSurvivalCommand implements CommandExecutor {
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "setmaxplayers <arena> <amount>: " + ChatColor.WHITE + "set maximum number of players for the <arena>");
 
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "difficulty <arena> <level (1 - 5)>: " + ChatColor.WHITE + "difficulty of the <arena> (1 = slowest, 5 = fastest)");
-                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "floor <arena>: " + ChatColor.WHITE + "set current Y-Value (height) as the floor of the <arena>");
-                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "type <arena> <type>: " + ChatColor.WHITE + "set death floor of <arena> with <type:NONE/VOID/LAVA>");
+                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "usefloor <arena>: " + ChatColor.WHITE + "turns on/off height elimination of <arena>");
+                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "floor <arena>: " + ChatColor.WHITE + "set current player height as an elimination zone of the <arena>");
+                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "death <arena> <type>: " + ChatColor.WHITE + "set death floor of <arena> with <type:NONE/VOID/LAVA>");
 
                 } else if (usage.equalsIgnoreCase("admin") && strings.length == 1){
 
                     commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Administrator Commands");
 
-                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "forcestart <arena>: " + ChatColor.WHITE + "forcestart <arena>");
-                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "forcestop <arena>: " + ChatColor.WHITE + "forcestop <arena>");
+                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "forcestart <arena>: " + ChatColor.WHITE + "force-start <arena>");
+                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "forcestop <arena>: " + ChatColor.WHITE + "force-stop <arena>");
 
                 } else if (usage.equalsIgnoreCase("player") && strings.length == 1){
 
@@ -156,6 +162,12 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                         commandSender.sendMessage(ChatColor.WHITE + "Difficulty: " + ChatColor.GOLD + arena.getDifficulty() + ChatColor.RED + " [NOT READY]");
                                     }
 
+                                    if(arena.isLobbyValid()){
+                                        commandSender.sendMessage(ChatColor.WHITE + "Using Lobby: " + ChatColor.GOLD + arena.getLobbyString() + ChatColor.GREEN + " [READY]");
+                                    } else {
+                                        commandSender.sendMessage(ChatColor.WHITE + "Using Lobby: " + ChatColor.RED + " [FALSE]");
+                                    }
+
                                     if(arena.isPos1Valid()){
                                         commandSender.sendMessage(ChatColor.WHITE + "Position 1: " + ChatColor.GOLD + arena.getStringPos1() + ChatColor.GREEN + " [READY]");
                                     } else {
@@ -169,10 +181,10 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                     }
 
                                     if(arena.usingFloor()){
-                                        commandSender.sendMessage(ChatColor.WHITE + "Using Floor: " + ChatColor.GOLD + "[TRUE]");
+                                        commandSender.sendMessage(ChatColor.WHITE + "Using Floor: " + ChatColor.GREEN + "[TRUE]");
                                         commandSender.sendMessage(ChatColor.WHITE + "Floor (Y-Value): " + ChatColor.GOLD + arena.getFloor());
                                     } else {
-                                        commandSender.sendMessage(ChatColor.WHITE + "Using Floor: " + ChatColor.GOLD + "[FALSE]");
+                                        commandSender.sendMessage(ChatColor.WHITE + "Using Floor: " + ChatColor.RED + "[FALSE]");
                                     }
 
                                     if(!arena.getType().isEmpty()){
@@ -377,6 +389,80 @@ public class BlockSurvivalCommand implements CommandExecutor {
                     }
 
                     ////////////////////////////////////////////////////////////////////////////
+                    // FORCE START
+                    ////////////////////////////////////////////////////////////////////////////
+
+                    else if(usage.equalsIgnoreCase("forcestart")){
+
+                        if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN)){
+                            if(strings.length == 2){
+
+                                String arenaName = strings[1];
+
+                                if(ArenaManager.INSTANCE.getArena(arenaName) == null){
+                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + " " + arenaName +
+                                            ChatColor.RED + " does not exist.");
+                                } else {
+                                    Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
+
+                                    if(arena.getArenaState().equals(ArenaState.ENABLED) && arena.getGameState().equals(GameState.WAITING)){
+                                        if(arena.getPlayers().size() >= 2){
+                                            arena.forceStart();
+                                            commandSender.sendMessage(Strings.PREFIX + ChatColor.GOLD + arenaName +  ChatColor.WHITE + " has been force-started!");
+                                        } else {
+                                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: You can only force-start an arena if it has at least two players.");
+                                        }
+                                    } else {
+                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: You can only force-start an arena that is enabled and is waiting.");
+                                    }
+
+                                }
+
+                            } else {
+                                commandSender.sendMessage(Strings.INCORRECT_ARGUMENTS);
+                                commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "forcestart <arena>");
+                            }
+                        } else {
+                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                        }
+                    }
+
+                    ////////////////////////////////////////////////////////////////////////////
+                    // FORCE STOP
+                    ////////////////////////////////////////////////////////////////////////////
+
+                    else if(usage.equalsIgnoreCase("forcestop")){
+
+                        if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN)){
+                            if(strings.length == 2){
+
+                                String arenaName = strings[1];
+
+                                if(ArenaManager.INSTANCE.getArena(arenaName) == null){
+                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + " " + arenaName +
+                                            ChatColor.RED + " does not exist.");
+                                } else {
+                                    Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
+
+                                    if(arena.getArenaState().equals(ArenaState.ENABLED) && arena.getGameState().equals(GameState.STARTED)){
+                                        arena.reset();
+                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.GOLD + arenaName +  ChatColor.WHITE + " has been force-stopped!");
+                                    } else {
+                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: You can only force-stop an arena that is enabled and is in-game.");
+                                    }
+
+                                }
+
+                            } else {
+                                commandSender.sendMessage(Strings.INCORRECT_ARGUMENTS);
+                                commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "forcestop <arena>");
+                            }
+                        } else {
+                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                        }
+                    }
+
+                    ////////////////////////////////////////////////////////////////////////////
                     // SET MAIN LOBBY
                     ////////////////////////////////////////////////////////////////////////////
 
@@ -404,6 +490,42 @@ public class BlockSurvivalCommand implements CommandExecutor {
                             } else {
                                 commandSender.sendMessage(Strings.INCORRECT_ARGUMENTS);
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "setmainlobby");
+                            }
+
+                        } else {
+                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                        }
+
+                        return true;
+                    }
+
+                    ////////////////////////////////////////////////////////////////////////////
+                    // SET LOBBY
+                    ////////////////////////////////////////////////////////////////////////////
+
+                    else if(usage.equalsIgnoreCase("lobby")){
+
+                        if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN) || player.hasPermission(Strings.PERMISSION_ARENA_SETUP)){
+                            String arenaName = strings[1];
+
+                            if(ArenaManager.INSTANCE.getArena(arenaName) == null){
+                                commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName + ChatColor.RED + " does not exist.");
+                            } else {
+
+                                Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
+
+                                Location lobby = player.getLocation();
+                                arena.setLobby(lobby);
+
+                                commandSender.sendMessage(Strings.PREFIX + ChatColor.GREEN + "Lobby of " + ChatColor.WHITE + arenaName +  ChatColor.GREEN + " set to " + arena.getLobbyString());
+
+                                FileConfiguration arenaConfiguration = ConfigurationManager.INSTANCE.getArenaConfiguration();
+                                arenaConfiguration.set("Arenas." + arenaName + ".Lobby.World", lobby.getWorld().getName());
+                                arenaConfiguration.set("Arenas." + arenaName + ".Lobby.x", lobby.getBlockX());
+                                arenaConfiguration.set("Arenas." + arenaName + ".Lobby.y", lobby.getBlockY());
+                                arenaConfiguration.set("Arenas." + arenaName + ".Lobby.z", lobby.getBlockZ());
+
+                                ConfigurationManager.INSTANCE.saveArenaConfiguration();
                             }
 
                         } else {
@@ -549,6 +671,49 @@ public class BlockSurvivalCommand implements CommandExecutor {
                     }
 
                     ////////////////////////////////////////////////////////////////////////////
+                    // USE FLOOR
+                    ////////////////////////////////////////////////////////////////////////////
+
+                    else if(usage.equalsIgnoreCase("usefloor")){
+
+                        if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN) || player.hasPermission(Strings.PERMISSION_ARENA_SETUP)){
+                            if(strings.length == 2){
+
+                                String arenaName = strings[1];
+
+                                if(ArenaManager.INSTANCE.getArena(arenaName) == null){
+                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName +
+                                            ChatColor.RED + " does not exist.");
+                                } else {
+                                    Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
+
+                                    boolean usingFloor = arena.usingFloor();
+
+                                    if(usingFloor){
+                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Height elimination zone of " + ChatColor.WHITE + arenaName +  ChatColor.RED + " has been turned off!");
+                                    } else {
+                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.GREEN + "Height elimination zone of " + ChatColor.WHITE + arenaName +  ChatColor.GREEN + " has been turned on!");
+                                    }
+
+                                    arena.setFloorUsage(!usingFloor);
+
+                                    FileConfiguration arenaConfiguration = ConfigurationManager.INSTANCE.getArenaConfiguration();
+                                    arenaConfiguration.set("Arenas." + arenaName + ".UsingFloor", arena.usingFloor());
+
+                                    ConfigurationManager.INSTANCE.saveArenaConfiguration();
+                                }
+
+                            } else {
+                                commandSender.sendMessage(Strings.INCORRECT_ARGUMENTS);
+                                commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "usefloor <arena>");
+                            }
+                        } else {
+                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                        }
+
+                    }
+
+                    ////////////////////////////////////////////////////////////////////////////
                     // FLOOR
                     ////////////////////////////////////////////////////////////////////////////
 
@@ -587,10 +752,10 @@ public class BlockSurvivalCommand implements CommandExecutor {
                     }
 
                     ////////////////////////////////////////////////////////////////////////////
-                    // TYPE
+                    // DEATH
                     ////////////////////////////////////////////////////////////////////////////
 
-                    else if(usage.equalsIgnoreCase("type")){
+                    else if(usage.equalsIgnoreCase("death")){
 
                         if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN) || player.hasPermission(Strings.PERMISSION_ARENA_SETUP)) {
                             if(strings.length == 3){
@@ -614,13 +779,13 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                         ConfigurationManager.INSTANCE.saveArenaConfiguration();
 
                                     } else {
-                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Type " + ChatColor.WHITE + type + ChatColor.RED + " is not a valid death floor type.");
+                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Type " + ChatColor.WHITE + type + ChatColor.RED + " is not a valid death type.");
                                     }
                                 }
 
                             } else {
                                 commandSender.sendMessage(Strings.INCORRECT_ARGUMENTS);
-                                commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "type <arena> <type:NONE/VOID/LAVA>");
+                                commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "type <death> <type:NONE/VOID/LAVA>");
                             }
                         } else {
                             commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
