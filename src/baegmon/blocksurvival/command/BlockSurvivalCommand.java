@@ -394,7 +394,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
 
                     else if(usage.equalsIgnoreCase("forcestart")){
 
-                        if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN)){
+                        if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN) || player.hasPermission(Strings.PERMISSION_FORCE_START)){
                             if(strings.length == 2){
 
                                 String arenaName = strings[1];
@@ -433,7 +433,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
 
                     else if(usage.equalsIgnoreCase("forcestop")){
 
-                        if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN)){
+                        if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN) || player.hasPermission(Strings.PERMISSION_FORCE_STOP)){
                             if(strings.length == 2){
 
                                 String arenaName = strings[1];

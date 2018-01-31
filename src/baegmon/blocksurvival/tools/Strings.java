@@ -14,8 +14,8 @@ public final class Strings {
 
     // PERMISSION
     public static final String PERMISSION_ALL = "blocksurvival.*";
-    public static final String PERMISSION_ADMIN = "blocksurvival.admin";
-    public static final String PERMISSION_PLAYER = "blocksurvival.player";
+    public static final String PERMISSION_ADMIN = "blocksurvival.admin.*";
+    public static final String PERMISSION_PLAYER = "blocksurvival.player.*";
 
     // INDIVIDUAL PLAYER PERMISSION
     public static final String PERMISSION_JOIN = "blocksurvival.player.join";
@@ -28,7 +28,7 @@ public final class Strings {
     public static final String PERMISSION_ARENA_SETUP = "blocksurvival.admin.setup";
 
     // SIGN PERMISSION
-    public static final String PERMISSION_USE_SIGN = "blocksurvival.sign";
+    public static final String PERMISSION_USE_SIGN = "blocksurvival.player.sign";
 
 }
 
