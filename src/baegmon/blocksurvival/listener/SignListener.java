@@ -65,14 +65,9 @@ public class SignListener implements Listener {
 
                                 for(Arena arena : ArenaManager.INSTANCE.getArenas().values()){
                                     if(arena.playerInsideArena(player)){
-
                                         arena.leave(player);
-
-                                        player.sendMessage(Strings.PREFIX + ChatColor.AQUA + "You have left " + ChatColor.WHITE + arena.getName() + ChatColor.AQUA + " !");
                                         playerInsideArena = true;
-
                                         arena.updateSigns();
-
                                         break;
                                     }
                                 }
