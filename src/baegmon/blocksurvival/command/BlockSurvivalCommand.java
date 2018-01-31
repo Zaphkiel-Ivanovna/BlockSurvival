@@ -333,6 +333,9 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                         FileConfiguration arenaConfiguration = ConfigurationManager.INSTANCE.getArenaConfiguration();
                                         arenaConfiguration.set("Arenas." + arenaName + ".Enabled", true);
                                         ConfigurationManager.INSTANCE.saveArenaConfiguration();
+
+                                        arena.saveArenaBlocks();
+
                                     } else {
                                         commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Arena " + ChatColor.GOLD + arenaName + ChatColor.RED + " is already enabled!");
                                     }
@@ -617,6 +620,8 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                     arenaConfiguration.set("Arenas." + arenaName + ".Position1.z", pos1.getBlockZ());
 
                                     ConfigurationManager.INSTANCE.saveArenaConfiguration();
+
+                                    arena.saveArenaBlocks();
                                 }
 
                             } else {
@@ -658,6 +663,9 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                     arenaConfiguration.set("Arenas." + arenaName + ".Position2.z", pos2.getBlockZ());
 
                                     ConfigurationManager.INSTANCE.saveArenaConfiguration();
+
+                                    arena.saveArenaBlocks();
+
                                 }
 
                             } else {
