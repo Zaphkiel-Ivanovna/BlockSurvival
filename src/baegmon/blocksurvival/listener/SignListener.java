@@ -52,11 +52,23 @@ public class SignListener implements Listener {
                                     }
                                 }
 
-                                if(!playerAlreadyInGame){
-                                    Arena arena = ArenaManager.INSTANCE.getArena(a.getArena());
-                                    arena.join(player);
+                                Arena arena = ArenaManager.INSTANCE.getArena(a.getArena());
 
-                                    arena.updateSigns();
+                                if(!playerAlreadyInGame){
+                                    if(arena.isArenaValid()){
+
+                                        if(arena.joinable()){
+                                            if(arena.getPlayers().size() < arena.getMaxPlayers()){
+                                                arena.join(player);
+                                            } else {
+                                                player.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " cannot be joined because it is full!");
+                                            }
+                                        } else {
+                                            player.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " has already started!");
+                                        }
+                                    } else {
+                                        player.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " cannot be started because it is currently invalid!");
+                                    }
                                 }
 
                             } else if (a.getType().equals(SignType.LEAVE)){

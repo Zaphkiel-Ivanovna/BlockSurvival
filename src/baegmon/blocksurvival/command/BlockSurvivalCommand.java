@@ -935,17 +935,20 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                             if(arena.isArenaValid()){
 
                                                 if(arena.joinable()){
-                                                    arena.join(player);
+                                                    if(arena.getPlayers().size() < arena.getMaxPlayers()){
+                                                        arena.join(player);
+                                                    } else {
+                                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " cannot be joined because it is full!");
+                                                    }
                                                 } else {
-                                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Arena " + ChatColor.GOLD + arena.getName() + ChatColor.RED + " has already started!");
+                                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " has already started!");
                                                 }
                                             } else {
-                                                commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Arena " + ChatColor.GOLD + arena.getName() + ChatColor.RED + " cannot be started because it is currently invalid!");
+                                                commandSender.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " cannot be started because it is currently invalid!");
                                             }
 
                                         } else {
-                                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName +
-                                                    ChatColor.RED + " does not exist.");
+                                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: " + ChatColor.GOLD + arenaName + ChatColor.RED + " does not exist.");
                                         }
 
                                     } else{

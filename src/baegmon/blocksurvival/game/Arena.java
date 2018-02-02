@@ -46,7 +46,7 @@ public class Arena {
     private GameState gameState;
 
     // Tasks that will run the arena
-    private boolean forceStarted = true;
+    private boolean forceStarted = false;
     private Countdown countdown = new Countdown(this);
     private Game game = new Game(this);
 

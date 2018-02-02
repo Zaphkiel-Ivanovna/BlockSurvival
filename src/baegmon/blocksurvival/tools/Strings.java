@@ -5,7 +5,7 @@ import org.bukkit.ChatColor;
 public final class Strings {
 
     public static final String CREATOR = ChatColor.GOLD + "baegmon@gmail.com";
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.0.1";
     public static final String LOBBY_INVALID = "The lobby has not been set or is currently invalid. Contact an administrator to fix this issue.";
     public static final String PREFIX = ChatColor.GREEN + "[ " + ChatColor.GOLD +  "BlockSurvival" + ChatColor.GREEN+ " ] ";
     public static final String COMMAND_PREFIX = ChatColor.GOLD +  "/BlockSurvival ";
