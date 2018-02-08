@@ -8,8 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="15266453-df65-4a9c-98c2-e6e4ce28eb10" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/baegmon/blocksurvival/command/BlockSurvivalCommand.java" afterPath="$PROJECT_DIR$/src/baegmon/blocksurvival/command/BlockSurvivalCommand.java" />
-      <change beforePath="$PROJECT_DIR$/src/baegmon/blocksurvival/listener/SignListener.java" afterPath="$PROJECT_DIR$/src/baegmon/blocksurvival/listener/SignListener.java" />
+      <change beforePath="$PROJECT_DIR$/src/baegmon/blocksurvival/game/Arena.java" afterPath="$PROJECT_DIR$/src/baegmon/blocksurvival/game/Arena.java" />
+      <change beforePath="$PROJECT_DIR$/src/baegmon/blocksurvival/game/Global.java" afterPath="$PROJECT_DIR$/src/baegmon/blocksurvival/game/Global.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -32,11 +32,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="BlockSurvivalCommand.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="BlockSurvivalCommand.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/command/BlockSurvivalCommand.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="311">
-              <caret line="875" column="118" lean-forward="false" selection-start-line="875" selection-start-column="118" selection-end-line="875" selection-end-column="118" />
+            <state relative-caret-position="2125">
+              <caret line="140" column="59" lean-forward="false" selection-start-line="140" selection-start-column="59" selection-end-line="140" selection-end-column="59" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -47,7 +47,7 @@
       <file leaf-file-name="SignListener.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/listener/SignListener.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2924">
+            <state relative-caret-position="2652">
               <caret line="172" column="1" lean-forward="false" selection-start-line="172" selection-start-column="1" selection-end-line="172" selection-end-column="1" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -102,13 +102,28 @@
       <file leaf-file-name="Arena.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/game/Arena.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="829">
-              <caret line="290" column="16" lean-forward="false" selection-start-line="290" selection-start-column="16" selection-end-line="290" selection-end-column="16" />
+            <state relative-caret-position="166">
+              <caret line="255" column="101" lean-forward="false" selection-start-line="255" selection-start-column="101" selection-end-line="255" selection-end-column="101" />
               <folding>
                 <element signature="e#2372#2373#0" expanded="true" />
                 <element signature="e#2461#2462#0" expanded="true" />
                 <element signature="e#6339#6340#0" expanded="true" />
                 <element signature="e#6374#6375#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Global.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/game/Global.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="493">
+              <caret line="39" column="0" lean-forward="false" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
+              <folding>
+                <element signature="e#1058#1059#0" expanded="true" />
+                <element signature="e#1086#1087#0" expanded="true" />
+                <element signature="e#1180#1181#0" expanded="true" />
+                <element signature="e#1211#1212#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -151,15 +166,15 @@
         <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/game/GlobalSettings.java" />
         <option value="$PROJECT_DIR$/src/plugin.yml" />
         <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/game/ArenaSign.java" />
-        <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/game/Global.java" />
         <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/timer/Countdown.java" />
         <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/timer/Game.java" />
         <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/configuration/ConfigurationManager.java" />
         <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/listener/ArenaListener.java" />
-        <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/game/Arena.java" />
         <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/tools/Strings.java" />
         <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/listener/SignListener.java" />
         <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/command/BlockSurvivalCommand.java" />
+        <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/game/Arena.java" />
+        <option value="$PROJECT_DIR$/src/baegmon/blocksurvival/game/Global.java" />
       </list>
     </option>
   </component>
@@ -175,7 +190,7 @@
     <option name="height" value="1047" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
+    <navigator proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -188,41 +203,7 @@
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="Scratches" />
-      <pane id="AndroidView" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="BlockSurvival" type="b2602c69:ProjectViewProjectNode" />
-              <item name="BlockSurvival" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="BlockSurvival" type="b2602c69:ProjectViewProjectNode" />
-              <item name="BlockSurvival" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="BlockSurvival" type="b2602c69:ProjectViewProjectNode" />
-              <item name="BlockSurvival" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="blocksurvival" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="BlockSurvival" type="b2602c69:ProjectViewProjectNode" />
-              <item name="BlockSurvival" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="blocksurvival" type="462c0819:PsiDirectoryNode" />
-              <item name="command" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -404,12 +385,14 @@
       <workItem from="1517998354361" duration="38000" />
       <workItem from="1517998457430" duration="3038000" />
       <workItem from="1518010131413" duration="62000" />
-      <workItem from="1518078030308" duration="1788000" />
+      <workItem from="1518078030308" duration="2080000" />
+      <workItem from="1518089668122" duration="624000" />
+      <workItem from="1518090420615" duration="262000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="190010000" />
+    <option name="totallyTimeSpent" value="191188000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -422,7 +405,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-1449" y="0" width="1456" height="1047" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32930845" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -433,7 +415,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32930845" sideWeight="0.5032415" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32930845" sideWeight="0.49675852" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32930845" sideWeight="0.49675852" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -764,13 +746,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/game/Global.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="13" lean-forward="false" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/timer/Game.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2414">
@@ -830,22 +805,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/game/Arena.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="829">
-          <caret line="290" column="16" lean-forward="false" selection-start-line="290" selection-start-column="16" selection-end-line="290" selection-end-column="16" />
-          <folding>
-            <element signature="e#2372#2373#0" expanded="true" />
-            <element signature="e#2461#2462#0" expanded="true" />
-            <element signature="e#6339#6340#0" expanded="true" />
-            <element signature="e#6374#6375#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/listener/SignListener.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2924">
+        <state relative-caret-position="2652">
           <caret line="172" column="1" lean-forward="false" selection-start-line="172" selection-start-column="1" selection-end-line="172" selection-end-column="1" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -855,10 +817,36 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/command/BlockSurvivalCommand.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="311">
-          <caret line="875" column="118" lean-forward="false" selection-start-line="875" selection-start-column="118" selection-end-line="875" selection-end-column="118" />
+        <state relative-caret-position="2125">
+          <caret line="140" column="59" lean-forward="false" selection-start-line="140" selection-start-column="59" selection-end-line="140" selection-end-column="59" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/game/Arena.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="255" column="101" lean-forward="false" selection-start-line="255" selection-start-column="101" selection-end-line="255" selection-end-column="101" />
+          <folding>
+            <element signature="e#2372#2373#0" expanded="true" />
+            <element signature="e#2461#2462#0" expanded="true" />
+            <element signature="e#6339#6340#0" expanded="true" />
+            <element signature="e#6374#6375#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/baegmon/blocksurvival/game/Global.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="493">
+          <caret line="39" column="0" lean-forward="false" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
+          <folding>
+            <element signature="e#1058#1059#0" expanded="true" />
+            <element signature="e#1086#1087#0" expanded="true" />
+            <element signature="e#1180#1181#0" expanded="true" />
+            <element signature="e#1211#1212#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -245,15 +245,15 @@ public class Arena {
     }
 
     public boolean isLobbyValid(){
-        return lobby != null && lobby.getBlockX() != 0 && lobby.getBlockY() != 0 && lobby.getBlockZ() != 0;
+        return lobby != null && !(lobby.getBlockX() == 0 && lobby.getBlockY() == 0 && lobby.getBlockZ() == 0);
     }
 
     public boolean isPos1Valid(){
-        return pos1 != null && pos1.getBlockX() != 0 && pos1.getBlockY() != 0 && pos1.getBlockZ() != 0;
+        return pos1 != null && !(pos1.getBlockX() == 0 && pos1.getBlockY() == 0 && pos1.getBlockZ() == 0);
     }
 
     public boolean isPos2Valid(){
-        return pos2 != null && pos2.getBlockX() != 0 && pos2.getBlockY() != 0 && pos2.getBlockZ() != 0;
+        return pos2 != null && !(pos2.getBlockX() == 0 && pos2.getBlockY() == 0 && pos2.getBlockZ() == 0);
     }
 
     public boolean isPlayerRequirementsValid(){

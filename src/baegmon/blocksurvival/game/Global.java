@@ -37,7 +37,7 @@ public enum Global {
     }
 
     public boolean isLobbyValid(){
-        return world != null && !world.isEmpty() && lobby != null && lobby.getBlockX() != 0 && lobby.getBlockY() != 0 && lobby.getBlockZ() != 0;
+        return world != null && !world.isEmpty() && lobby != null && !(lobby.getBlockX() == 0 && lobby.getBlockY() == 0 && lobby.getBlockZ() == 0);
     }
 
     public ArrayList<ArenaSign> getSigns() {
