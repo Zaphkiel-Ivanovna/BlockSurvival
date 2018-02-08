@@ -873,7 +873,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                     } else {
 
                                         if(amount <= 1){
-                                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Minimum number of players cannot be lower than 1.");
+                                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Maximum number of players cannot be lower than 1.");
                                         }
 
                                         Arena arena = ArenaManager.INSTANCE.getArena(arenaName);

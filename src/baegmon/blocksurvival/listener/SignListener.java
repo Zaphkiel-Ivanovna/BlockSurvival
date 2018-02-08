@@ -107,9 +107,9 @@ public class SignListener implements Listener {
         Player player = event.getPlayer();
 
         if( ( event.getLine(0).equals("[bs]") || event.getLine(0).equals("[BlockSurvival]") ) &&
-            ( player.hasPermission(Strings.PERMISSION_ALL) ||
-                    player.hasPermission(Strings.PERMISSION_ADMIN) ||
-                    player.hasPermission(Strings.PERMISSION_ARENA_SETUP) )) {
+                ( player.hasPermission(Strings.PERMISSION_ALL) ||
+                        player.hasPermission(Strings.PERMISSION_ADMIN) ||
+                        player.hasPermission(Strings.PERMISSION_ARENA_SETUP) )) {
 
             String line2 = event.getLine(1);
             String line3 = event.getLine(2);
