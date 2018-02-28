@@ -11,9 +11,9 @@ import baegmon.blocksurvival.tools.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.util.BlockVector;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,18 +58,18 @@ public enum ConfigurationManager {
         configuration = YamlConfiguration.loadConfiguration(configFile);
         arenaConfiguration = YamlConfiguration.loadConfiguration(arenaFile);
 
-        Bukkit.getServer().getConsoleSender().sendMessage( Strings.PREFIX + ChatColor.GREEN + "Plugin configuration file (config.yml) was loaded!");
-        Bukkit.getServer().getConsoleSender().sendMessage(Strings.PREFIX + ChatColor.GREEN + "Arenas configuration file (arenas.yml) was loaded!");
-
         if(configuration.contains("Game")){
-            Global.INSTANCE.setWorld(configuration.getString("Game.Lobby.World"));
-            Global.INSTANCE.setLobby(
-                    new BlockVector(
-                            configuration.getInt("Game.Lobby.x"),
-                            configuration.getInt("Game.Lobby.y"),
-                            configuration.getInt("Game.Lobby.z")
-                    )
-            );
+            World mainLobby = Bukkit.getWorld(configuration.getString("Game.Lobby.World"));
+
+            if(mainLobby != null){
+                Global.INSTANCE.setLobby(
+                        new Location(mainLobby,
+                                configuration.getInt("Game.Lobby.x"),
+                                configuration.getInt("Game.Lobby.y"),
+                                configuration.getInt("Game.Lobby.z")
+                        )
+                );
+            }
 
             if(configuration.contains("Game.Signs")){
                 for(String key : configuration.getConfigurationSection("Game.Signs").getKeys(false)){
@@ -112,38 +112,45 @@ public enum ConfigurationManager {
                 Arena arena = new Arena(key);
 
                 arena.setArenaState(arenaConfiguration.getBoolean("Arenas." + key + ".Enabled"));
-                arena.setWorld(arenaConfiguration.getString("Arenas." + key + ".World"));
                 arena.setDifficulty(arenaConfiguration.getInt("Arenas." + key + ".Difficulty"));
                 arena.setMinPlayers(arenaConfiguration.getInt("Arenas." + key + ".MinimumPlayers"));
                 arena.setMaxPlayers(arenaConfiguration.getInt("Arenas." + key + ".MaximumPlayers"));
 
-
                 if(arenaConfiguration.contains("Arenas." + key + ".Lobby")){
-                    arena.setLobby(
-                            new Location(
-                                    Bukkit.getWorld(arenaConfiguration.getString("Arenas." + key + ".Lobby.World")),
-                                    arenaConfiguration.getDouble("Arenas." + key + ".Lobby.x"),
-                                    arenaConfiguration.getDouble("Arenas." + key + ".Lobby.y"),
-                                    arenaConfiguration.getDouble("Arenas." + key + ".Lobby.z")
+
+                    World lobby = Bukkit.getWorld(arenaConfiguration.getString("Arenas." + key + ".Lobby.World"));
+                    if(lobby != null){
+                        arena.setLobby(
+                                new Location(lobby,
+                                        arenaConfiguration.getDouble("Arenas." + key + ".Lobby.x"),
+                                        arenaConfiguration.getDouble("Arenas." + key + ".Lobby.y"),
+                                        arenaConfiguration.getDouble("Arenas." + key + ".Lobby.z")
+                                )
+                        );
+                    }
+                }
+
+                World pos1 = Bukkit.getWorld(arenaConfiguration.getString("Arenas." + key + ".Position1.World"));
+                if(pos1 != null){
+                    arena.setPos1(
+                            new Location(pos1,
+                                    arenaConfiguration.getInt("Arenas." + key + ".Position1.x"),
+                                    arenaConfiguration.getInt("Arenas." + key + ".Position1.y"),
+                                    arenaConfiguration.getInt("Arenas." + key + ".Position1.z")
                             )
                     );
                 }
 
-
-                arena.setPos1(
-                        new BlockVector(
-                                arenaConfiguration.getInt("Arenas." + key + ".Position1.x"),
-                                arenaConfiguration.getInt("Arenas." + key + ".Position1.y"),
-                                arenaConfiguration.getInt("Arenas." + key + ".Position1.z")
-                        )
-                );
-                arena.setPos2(
-                        new BlockVector(
-                                arenaConfiguration.getInt("Arenas." + key + ".Position2.x"),
-                                arenaConfiguration.getInt("Arenas." + key + ".Position2.y"),
-                                arenaConfiguration.getInt("Arenas." + key + ".Position2.z")
-                        )
-                );
+                World pos2 = Bukkit.getWorld(arenaConfiguration.getString("Arenas." + key + ".Position2.World"));
+                if(pos2 != null){
+                    arena.setPos2(
+                            new Location(pos2,
+                                    arenaConfiguration.getInt("Arenas." + key + ".Position2.x"),
+                                    arenaConfiguration.getInt("Arenas." + key + ".Position2.y"),
+                                    arenaConfiguration.getInt("Arenas." + key + ".Position2.z")
+                            )
+                    );
+                }
 
                 arena.setWait(arenaConfiguration.getInt("Arenas." + key + ".LobbyTime"));
                 arena.setFloorUsage(arenaConfiguration.getBoolean("Arenas." + key + ".UsingFloor"));
@@ -162,6 +169,9 @@ public enum ConfigurationManager {
                 arena.updateSigns();
             }
         }
+
+        Bukkit.getServer().getConsoleSender().sendMessage( Strings.PREFIX + ChatColor.GREEN + "Plugin configuration file (config.yml) was loaded!");
+        Bukkit.getServer().getConsoleSender().sendMessage(Strings.PREFIX + ChatColor.GREEN + "Arenas configuration file (arenas.yml) was loaded!");
     }
 
     public FileConfiguration getConfiguration() {

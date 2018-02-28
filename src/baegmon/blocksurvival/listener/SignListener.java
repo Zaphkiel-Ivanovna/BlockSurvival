@@ -46,7 +46,7 @@ public class SignListener implements Listener {
 
                                 for(Arena arena : ArenaManager.INSTANCE.getArenas().values()){
                                     if(arena.playerInsideArena(player)){
-                                        player.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: You cannot join an arena while inside of an arena!");
+                                        player.sendMessage(Strings.ERROR_ALREADY_IN_ARENA);
                                         playerAlreadyInGame = true;
                                         break;
                                     }
@@ -61,13 +61,13 @@ public class SignListener implements Listener {
                                             if(arena.getPlayers().size() < arena.getMaxPlayers()){
                                                 arena.join(player);
                                             } else {
-                                                player.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " cannot be joined because it is full!");
+                                                player.sendMessage(Strings.ERROR_ARENA_FULL(arena.getName()));
                                             }
                                         } else {
-                                            player.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " has already started!");
+                                            player.sendMessage(Strings.ERROR_ARENA_STARTED(arena.getName()));
                                         }
                                     } else {
-                                        player.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " cannot be started because it is currently invalid!");
+                                        player.sendMessage(Strings.ERROR_ARENA_INVALID(arena.getName()));
                                     }
                                 }
 
@@ -85,13 +85,13 @@ public class SignListener implements Listener {
                                 }
 
                                 if(!playerInsideArena){
-                                    player.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: You have not joined an arena!");
+                                    player.sendMessage(Strings.ERROR_PLAYER_NOT_JOINED_ARENA);
                                 }
 
                             }
 
                         } else {
-                            player.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to use this sign");
+                            player.sendMessage(Strings.ERROR_INSUFFICIENT_SIGN_PERMISSION);
                         }
 
                         break;

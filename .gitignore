@@ -4,3 +4,4 @@ dependencies/spigot-1.12.2.jar
 out/production/BlockSurvival/baegmon/blocksurvival/configuration/ConfigurationManager.class
 out/production/BlockSurvival/baegmon/blocksurvival/game/Global.class
 out/production/BlockSurvival/baegmon/blocksurvival/timer/Countdown.class
+*.xml

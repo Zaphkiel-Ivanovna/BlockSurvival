@@ -59,7 +59,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "setminplayers <arena> <amount>: " + ChatColor.WHITE + "set minimum number of players for the <arena>");
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "setmaxplayers <arena> <amount>: " + ChatColor.WHITE + "set maximum number of players for the <arena>");
 
-                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "difficulty <arena> <level (1 - 5)>: " + ChatColor.WHITE + "difficulty of the <arena> (1 = slowest, 5 = fastest)");
+                    commandSender.sendMessage(Strings.COMMAND_PREFIX + "difficulty <arena> <level (1 - 10)>: " + ChatColor.WHITE + "difficulty of the <arena> (1 = slowest, 10 = fastest)");
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "usefloor <arena>: " + ChatColor.WHITE + "turns on/off height elimination of <arena>");
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "floor <arena>: " + ChatColor.WHITE + "set current player height as an elimination zone of the <arena>");
                     commandSender.sendMessage(Strings.COMMAND_PREFIX + "death <arena> <type>: " + ChatColor.WHITE + "set death floor of <arena> with <type:NONE/VOID/LAVA>");
@@ -113,7 +113,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                             }
 
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                         return true;
@@ -131,7 +131,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 String arenaName = strings[1];
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName + ChatColor.RED + " does not exist.");
+                                    commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                 } else {
 
                                     Arena arena = ArenaManager.INSTANCE.getArenas().get(arenaName);
@@ -220,7 +220,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "status <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                         return true;
@@ -236,19 +236,16 @@ public class BlockSurvivalCommand implements CommandExecutor {
                             if(strings.length == 2){
 
                                 String arenaName = strings[1];
-                                String worldName = player.getWorld().getName();
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
 
                                     Arena arena = new Arena(arenaName);
-                                    arena.setWorld(worldName);
 
                                     ArenaManager.INSTANCE.addArena(arenaName, arena);
                                     commandSender.sendMessage(Strings.PREFIX + ChatColor.GREEN + "Arena " + ChatColor.WHITE + arenaName + ChatColor.GREEN + " created successfully.");
 
                                     FileConfiguration arenaConfiguration = ConfigurationManager.INSTANCE.getArenaConfiguration();
                                     arenaConfiguration.set("Arenas." + arenaName + ".Enabled", false);
-                                    arenaConfiguration.set("Arenas." + arenaName + ".World", worldName);
                                     arenaConfiguration.set("Arenas." + arenaName + ".LobbyTime", 30);
                                     arenaConfiguration.set("Arenas." + arenaName + ".Difficulty", 1);
                                     arenaConfiguration.set("Arenas." + arenaName + ".UsingFloor", false);
@@ -265,7 +262,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "create <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                         return true;
@@ -283,10 +280,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 String arenaName = strings[1];
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + " " + arenaName +
-                                            ChatColor.RED + " does not exist.");
-
-
+                                    commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                 } else {
                                     ArenaManager.INSTANCE.removeArena(arenaName);
                                     commandSender.sendMessage(Strings.PREFIX + ChatColor.GREEN + "Arena " + ChatColor.WHITE + arenaName + ChatColor.GREEN + " deleted.");
@@ -304,7 +298,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "delete <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
                     }
 
@@ -320,8 +314,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 String arenaName = strings[1];
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + " " + arenaName +
-                                            ChatColor.RED + " does not exist.");
+                                    commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                 } else {
 
                                     Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
@@ -347,7 +340,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "enable <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
                     }
 
@@ -363,8 +356,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 String arenaName = strings[1];
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + " " + arenaName +
-                                            ChatColor.RED + " does not exist.");
+                                    commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                 } else {
                                     Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
 
@@ -386,7 +378,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "disable <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                     }
@@ -426,7 +418,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "forcestart <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
                     }
 
@@ -442,8 +434,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 String arenaName = strings[1];
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + " " + arenaName +
-                                            ChatColor.RED + " does not exist.");
+                                    commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                 } else {
                                     Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
 
@@ -461,7 +452,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "forcestop <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
                     }
 
@@ -474,17 +465,15 @@ public class BlockSurvivalCommand implements CommandExecutor {
                         if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN) || player.hasPermission(Strings.PERMISSION_ARENA_SETUP)){
                             if(strings.length == 1){
 
-                                BlockVector lobby = player.getLocation().toVector().toBlockVector();
-                                String worldName = player.getWorld().getName();
+                                Location location = player.getLocation();
 
-                                Global.INSTANCE.setWorld(worldName);
-                                Global.INSTANCE.setLobby(lobby);
+                                Global.INSTANCE.setLobby(location);
 
                                 FileConfiguration configuration = ConfigurationManager.INSTANCE.getConfiguration();
-                                configuration.set("Game.Lobby.World", worldName);
-                                configuration.set("Game.Lobby.x", lobby.getX());
-                                configuration.set("Game.Lobby.y", lobby.getY());
-                                configuration.set("Game.Lobby.z", lobby.getZ());
+                                configuration.set("Game.Lobby.World", location.getWorld().getName());
+                                configuration.set("Game.Lobby.x", location.getX());
+                                configuration.set("Game.Lobby.y", location.getY());
+                                configuration.set("Game.Lobby.z", location.getZ());
 
                                 ConfigurationManager.INSTANCE.saveConfiguration();
 
@@ -496,7 +485,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                             }
 
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                         return true;
@@ -512,7 +501,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                             String arenaName = strings[1];
 
                             if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName + ChatColor.RED + " does not exist.");
+                                commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                             } else {
 
                                 Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
@@ -532,7 +521,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                             }
 
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                         return true;
@@ -556,15 +545,13 @@ public class BlockSurvivalCommand implements CommandExecutor {
 
                                     if(difficulty < 0){
                                         commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Difficulty of the arena cannot be lower than 0!");
-                                    } else if (difficulty > 5) {
-                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Difficulty of the arena cannot be greater than 5!");
+                                    } else if (difficulty > 10) {
+                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Difficulty of the arena cannot be greater than 10!");
                                     } else {
 
                                         if(ArenaManager.INSTANCE.getArena(arenaName) ==  null){
-                                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName +
-                                                    ChatColor.RED + " does not exist.");
+                                            commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                         } else {
-
                                             ArenaManager.INSTANCE.getArena(arenaName).setDifficulty(difficulty);
                                             commandSender.sendMessage(Strings.PREFIX + ChatColor.GREEN + "Difficulty of " + ChatColor.WHITE + arenaName
                                                     + ChatColor.GREEN + " set to " + difficulty);
@@ -573,11 +560,10 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                             arenaConfiguration.set("Arenas." + arenaName + ".Difficulty", difficulty);
                                             ConfigurationManager.INSTANCE.saveArenaConfiguration();
                                         }
-
                                     }
 
                                 } else {
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: " + ChatColor.WHITE + number + ChatColor.RED + " is not a valid number.");
+                                    commandSender.sendMessage(Strings.ERROR_INVALID_NUMBER(number));
                                 }
 
                                 return true;
@@ -587,7 +573,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "difficulty <arena> <amount>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
                     }
 
@@ -603,25 +589,31 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 String arenaName = strings[1];
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName +
-                                            ChatColor.RED + " does not exist.");
+                                    commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                 } else {
 
                                     Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
 
-                                    BlockVector pos1 = player.getLocation().clone().subtract(0, 1, 0).toVector().toBlockVector();
-                                    arena.setPos1(pos1);
+                                    Location location = player.getLocation().clone().subtract(0, 1, 0);
 
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.GREEN + "Pos1 of " + ChatColor.WHITE + arenaName +  ChatColor.GREEN + " set to " + arena.getStringPos1());
+                                    if(arena.canSetPos1(location)){
+                                        arena.setPos1(location);
 
-                                    FileConfiguration arenaConfiguration = ConfigurationManager.INSTANCE.getArenaConfiguration();
-                                    arenaConfiguration.set("Arenas." + arenaName + ".Position1.x", pos1.getBlockX());
-                                    arenaConfiguration.set("Arenas." + arenaName + ".Position1.y", pos1.getBlockY());
-                                    arenaConfiguration.set("Arenas." + arenaName + ".Position1.z", pos1.getBlockZ());
+                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.GREEN + "Pos1 of " + ChatColor.WHITE + arenaName +  ChatColor.GREEN + " set to " + arena.getStringPos1());
 
-                                    ConfigurationManager.INSTANCE.saveArenaConfiguration();
+                                        FileConfiguration arenaConfiguration = ConfigurationManager.INSTANCE.getArenaConfiguration();
+                                        arenaConfiguration.set("Arenas." + arenaName + ".Position1.World", location.getWorld().getName());
+                                        arenaConfiguration.set("Arenas." + arenaName + ".Position1.x", location.getBlockX());
+                                        arenaConfiguration.set("Arenas." + arenaName + ".Position1.y", location.getBlockY());
+                                        arenaConfiguration.set("Arenas." + arenaName + ".Position1.z", location.getBlockZ());
 
-                                    arena.saveArenaBlocks();
+                                        ConfigurationManager.INSTANCE.saveArenaConfiguration();
+
+                                        arena.saveArenaBlocks();
+                                    } else {
+                                        commandSender.sendMessage(Strings.ERROR_POS_SAME_WORLD);
+                                    }
+
                                 }
 
                             } else {
@@ -629,7 +621,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "pos1 <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                         return true;
@@ -647,24 +639,30 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 String arenaName = strings[1];
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName +
-                                            ChatColor.RED + " does not exist.");
+                                    commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                 } else {
+
                                     Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
 
-                                    BlockVector pos2 = player.getLocation().clone().subtract(0, 1, 0).toVector().toBlockVector();
-                                    arena.setPos2(pos2);
+                                    Location location = player.getLocation().clone().subtract(0, 1, 0);
 
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.GREEN + "Pos2 of " + ChatColor.WHITE + arenaName +  ChatColor.GREEN + " set to " + arena.getStringPos2());
+                                    if(arena.canSetPos2(location)){
+                                        arena.setPos2(location);
 
-                                    FileConfiguration arenaConfiguration = ConfigurationManager.INSTANCE.getArenaConfiguration();
-                                    arenaConfiguration.set("Arenas." + arenaName + ".Position2.x", pos2.getBlockX());
-                                    arenaConfiguration.set("Arenas." + arenaName + ".Position2.y", pos2.getBlockY());
-                                    arenaConfiguration.set("Arenas." + arenaName + ".Position2.z", pos2.getBlockZ());
+                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.GREEN + "Pos2 of " + ChatColor.WHITE + arenaName +  ChatColor.GREEN + " set to " + arena.getStringPos2());
 
-                                    ConfigurationManager.INSTANCE.saveArenaConfiguration();
+                                        FileConfiguration arenaConfiguration = ConfigurationManager.INSTANCE.getArenaConfiguration();
+                                        arenaConfiguration.set("Arenas." + arenaName + ".Position2.World", location.getWorld().getName());
+                                        arenaConfiguration.set("Arenas." + arenaName + ".Position2.x", location.getBlockX());
+                                        arenaConfiguration.set("Arenas." + arenaName + ".Position2.y", location.getBlockY());
+                                        arenaConfiguration.set("Arenas." + arenaName + ".Position2.z", location.getBlockZ());
 
-                                    arena.saveArenaBlocks();
+                                        ConfigurationManager.INSTANCE.saveArenaConfiguration();
+
+                                        arena.saveArenaBlocks();
+                                    } else {
+                                        commandSender.sendMessage(Strings.ERROR_POS_SAME_WORLD);
+                                    }
 
                                 }
 
@@ -673,7 +671,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "pos2 <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                     }
@@ -690,8 +688,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 String arenaName = strings[1];
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName +
-                                            ChatColor.RED + " does not exist.");
+                                    commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                 } else {
                                     Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
 
@@ -716,7 +713,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "usefloor <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                     }
@@ -733,8 +730,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 String arenaName = strings[1];
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName +
-                                            ChatColor.RED + " does not exist.");
+                                    commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                 } else {
                                     Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
                                     arena.setFloorUsage(true);
@@ -754,7 +750,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "floor <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                     }
@@ -772,7 +768,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 String type = strings[2];
 
                                 if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName + ChatColor.RED + " does not exist.");
+                                    commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                 } else {
 
                                     if(type.equalsIgnoreCase("VOID") || type.equalsIgnoreCase("NONE") || type.equalsIgnoreCase("LAVA")){
@@ -796,7 +792,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "type <death> <type:NONE/VOID/LAVA>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                     }
@@ -818,12 +814,11 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                     int amount = Integer.parseInt(strings[2]);
 
                                     if (ArenaManager.INSTANCE.getArena(arenaName) == null) {
-                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName +
-                                                ChatColor.RED + " does not exist.");
+                                        commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                     } else {
 
                                         if (amount <= 1) {
-                                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Minimum number of players cannot be lower than 1.");
+                                            commandSender.sendMessage(Strings.ERROR_MIN_MORE_THAN_ONE);
                                         } else {
                                             Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
                                             arena.setMinPlayers(amount);
@@ -837,7 +832,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                     }
 
                                 } else {
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: " + ChatColor.WHITE + number + ChatColor.RED + " is not a valid number.");
+                                    commandSender.sendMessage(Strings.ERROR_INVALID_NUMBER(number));
                                 }
 
                                 return true;
@@ -847,7 +842,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "setminplayers <arena> <amount>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                     }
@@ -869,11 +864,11 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                     int amount = Integer.parseInt(strings[2]);
 
                                     if(ArenaManager.INSTANCE.getArena(arenaName) == null){
-                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Arena " + ChatColor.WHITE + arenaName + ChatColor.RED + " does not exist.");
+                                        commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                     } else {
 
                                         if(amount <= 1){
-                                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: Maximum number of players cannot be lower than 1.");
+                                            commandSender.sendMessage(Strings.ERROR_MAX_MORE_THAN_ONE);
                                         }
 
                                         Arena arena = ArenaManager.INSTANCE.getArena(arenaName);
@@ -886,7 +881,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                     }
 
                                 } else {
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: " + ChatColor.WHITE + number + ChatColor.RED + " is not a valid number.");
+                                    commandSender.sendMessage(Strings.ERROR_INVALID_NUMBER(number));
                                 }
 
                                 return true;
@@ -896,7 +891,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "setmaxplayers <arena> <amount>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                     }
@@ -918,7 +913,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
 
                                 for(Arena arena : ArenaManager.INSTANCE.getArenas().values()){
                                     if(arena.playerInsideArena(player)){
-                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: You cannot join an arena while inside of an arena!");
+                                        commandSender.sendMessage(Strings.ERROR_ALREADY_IN_ARENA);
                                         playerAlreadyInGame = true;
                                         break;
                                     }
@@ -938,21 +933,21 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                                     if(arena.getPlayers().size() < arena.getMaxPlayers()){
                                                         arena.join(player);
                                                     } else {
-                                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " cannot be joined because it is full!");
+                                                        commandSender.sendMessage(Strings.ERROR_ARENA_FULL(arenaName));
                                                     }
                                                 } else {
-                                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " has already started!");
+                                                    commandSender.sendMessage(Strings.ERROR_ARENA_STARTED(arenaName));
                                                 }
                                             } else {
-                                                commandSender.sendMessage(Strings.PREFIX + ChatColor.GOLD + arena.getName() + ChatColor.RED + " cannot be started because it is currently invalid!");
+                                                commandSender.sendMessage(Strings.ERROR_ARENA_INVALID(arenaName));
                                             }
 
                                         } else {
-                                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: " + ChatColor.GOLD + arenaName + ChatColor.RED + " does not exist.");
+                                            commandSender.sendMessage(Strings.ERROR_ARENA_DOES_NOT_EXIST(arenaName));
                                         }
 
                                     } else{
-                                        commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + Strings.LOBBY_INVALID);
+                                        commandSender.sendMessage(Strings.LOBBY_INVALID);
                                     }
                                 }
 
@@ -961,7 +956,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "join <arena>");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                         return true;
@@ -992,7 +987,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 }
 
                                 if(!playerInsideArena){
-                                    commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Error: You have not joined an arena!");
+                                    commandSender.sendMessage(Strings.ERROR_PLAYER_NOT_JOINED_ARENA);
                                 }
 
                             } else {
@@ -1000,7 +995,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
                                 commandSender.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Usage: " + Strings.COMMAND_PREFIX + ChatColor.WHITE + "leave");
                             }
                         } else {
-                            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "You do not have the permission to run this command.");
+                            commandSender.sendMessage(Strings.ERROR_INSUFFICIENT_PERMISSION);
                         }
 
                         return true;
@@ -1016,7 +1011,7 @@ public class BlockSurvivalCommand implements CommandExecutor {
             }
 
         } else {
-            commandSender.sendMessage(Strings.PREFIX + ChatColor.RED + "Commands can only be executed as a player!");
+            commandSender.sendMessage(Strings.ERROR_COMMAND_ONLY_PLAYER);
         }
 
         return true;

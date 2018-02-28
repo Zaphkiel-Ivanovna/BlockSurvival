@@ -28,38 +28,13 @@ public class Game extends BukkitRunnable {
         this.arena = arena;
     }
 
-    // 0.1s = 2 tick
-    // 0.25s = 5 tick
-    // 0.5s = 10 tick
-    // 1s = 20 tick
-    // 2s = 40 tick
-
     void start(int difficulty){
 
         long tick;
-
-        switch(difficulty){
-            case 0:
-                tick = 40L;
-                break;
-            case 1:
-                tick = 20L;
-                break;
-            case 2:
-                tick = 10L;
-                break;
-            case 3:
-                tick = 5L;
-                break;
-            case 4:
-                tick = 2L;
-                break;
-            case 5:
-                tick = 1L;
-                break;
-            default:
-                tick = 20L;
-                break;
+        if(difficulty != 10){
+            tick = 20 - (difficulty * 2);
+        } else {
+            tick = 1L;
         }
 
         arena.setGameState(GameState.STARTED);
@@ -94,10 +69,6 @@ public class Game extends BukkitRunnable {
 
                 blocks.remove(state);
                 state.getBlock().setType(Material.AIR);
-
-                /* Use this if you decide to re-enable falling blocks
-                MaterialData data = new MaterialData(state.getType());
-                */
 
                 dropCounter++;
             }
@@ -138,6 +109,8 @@ public class Game extends BukkitRunnable {
 
             Player winner = Bukkit.getPlayer(arena.getRemaining().iterator().next());
             arena.sendTitle(winner.getDisplayName() + " has won!", "", 120);
+            winner.setAllowFlight(true);
+            winner.setFlying(true);
 
             Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(BlockPlugin.getPlugin(BlockPlugin.class), new Runnable(){
                 int counter = 0;
@@ -158,6 +131,8 @@ public class Game extends BukkitRunnable {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BlockPlugin.getPlugin(BlockPlugin.class), () -> {
                 cancel();
                 arena.reset();
+                winner.setAllowFlight(false);
+                winner.setFlying(false);
             }, 140L);
 
         }

@@ -5,7 +5,6 @@ import baegmon.blocksurvival.game.*;
 import baegmon.blocksurvival.manager.ArenaManager;
 import baegmon.blocksurvival.tools.ArenaUtils;
 import baegmon.blocksurvival.tools.Strings;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -48,7 +47,7 @@ public class ArenaListener implements Listener {
                     Player player = event.getPlayer();
 
                     if(player.hasPermission(Strings.PERMISSION_ALL) || player.hasPermission(Strings.PERMISSION_ADMIN) || player.hasPermission(Strings.PERMISSION_ARENA_SETUP)){
-                        player.sendMessage(Strings.PREFIX + ChatColor.WHITE + "Sign has been removed successfully!");
+                        player.sendMessage(Strings.SIGN_REMOVED);
 
                         FileConfiguration gameConfiguration = ConfigurationManager.INSTANCE.getConfiguration();
                         gameConfiguration.set("Game.Signs." + sign.getId(), null);
@@ -69,11 +68,9 @@ public class ArenaListener implements Listener {
 
             for(Arena arena : ArenaManager.INSTANCE.getArenas().values()){
                 if(arena != null && arena.getArenaState() == ArenaState.ENABLED){
-                    BlockVector pos1 = arena.getPos1();
-                    BlockVector pos2 = arena.getPos2();
 
-                    Vector v1 = BlockVector.getMaximum(pos1, pos2);
-                    Vector v2 = BlockVector.getMinimum(pos1, pos2);
+                    Vector v1 = Vector.getMaximum(arena.getPos1().toVector(), arena.getPos2().toVector());
+                    Vector v2 = Vector.getMinimum(arena.getPos1().toVector(), arena.getPos2().toVector());
 
                     Vector v = new Vector(b.getX(), b.getY(), b.getZ());
                     boolean insideArena = v.isInAABB(v2, v1);
@@ -122,13 +119,34 @@ public class ArenaListener implements Listener {
                     } else if (arena.getGameState() == GameState.STARTED){
 
                         String type = arena.getType();
+                        boolean damageFlag = false;
 
-                        if(type.equalsIgnoreCase("VOID") && event.getCause() == EntityDamageEvent.DamageCause.VOID){
-                            arena.getGame().eliminatePlayer(player);
-                        } else if (type.equalsIgnoreCase("LAVA") && event.getCause() == EntityDamageEvent.DamageCause.LAVA){
-                            arena.getGame().eliminatePlayer(player);
+                        if(event.getCause() == EntityDamageEvent.DamageCause.VOID){
+                            if(type.equalsIgnoreCase("VOID") || type.equalsIgnoreCase("NONE")){
+                                arena.getGame().eliminatePlayer(player);
+                                damageFlag = true;
+                            }
+                        } else if (event.getCause() == EntityDamageEvent.DamageCause.LAVA) {
+                            if(type.equalsIgnoreCase("LAVA")){
+                                arena.getGame().eliminatePlayer(player);
+                                damageFlag = true;
+                            }
+                        } else if (event.getCause() == EntityDamageEvent.DamageCause.FALL){
+                            if(type.equalsIgnoreCase("NONE")){
+                                arena.getGame().eliminatePlayer(player);
+                                damageFlag = true;
+                            }
                         }
-                    } else if (arena.getGameState() == GameState.FINISHED){
+
+                        if(damageFlag){
+                            // teleport eliminated players to random location within the arena
+                            player.teleport(ArenaUtils.getRandomLocation(
+                                    arena.getWorld(),
+                                    arena.getPos1(),
+                                    arena.getPos2()).add(0, 5, 0));
+                        }
+
+                    } else if (arena.getGameState() == GameState.FINISHED || arena.getGameState() == GameState.RESTORING){
                         event.setCancelled(true);
                     }
 

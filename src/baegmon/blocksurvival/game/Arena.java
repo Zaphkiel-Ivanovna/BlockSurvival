@@ -17,7 +17,6 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.util.BlockVector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,8 +33,8 @@ public class Arena {
     private double floor; // y-value of the arena
     private String type = "NONE";
     private Location lobby;
-    private BlockVector pos1; // position of corner of arena
-    private BlockVector pos2; // position of corner of arena
+    private Location pos1; // position of corner of arena
+    private Location pos2; // position of corner of arena
     private int minPlayers = -1; // minimum number of players required to start arena
     private int maxPlayers = -1; // maximum number of players that can join an arena
     private int wait = 30; // number of seconds to wait inside of the lobby
@@ -111,11 +110,11 @@ public class Arena {
         return lobby;
     }
 
-    public BlockVector getPos1() {
+    public Location getPos1() {
         return pos1;
     }
 
-    public BlockVector getPos2() {
+    public Location getPos2() {
         return pos2;
     }
 
@@ -171,11 +170,9 @@ public class Arena {
         this.arenaState = arenaState;
     }
 
-    public void setWorld(String world){ this.world = world; }
-
     public void setDifficulty(int difficulty) {
-        if(difficulty < 0 || difficulty > 5){
-            this.difficulty = 2;
+        if(difficulty < 0 || difficulty > 10){
+            this.difficulty = 0;
         } else {
             this.difficulty = difficulty;
         }
@@ -187,16 +184,32 @@ public class Arena {
         this.floor = floor;
     }
 
-    public void setType(String type) { this.type = type; }
+    public void setType(String type) {
+        if(type.equalsIgnoreCase("NONE") || type.equalsIgnoreCase("LAVA") || type.equalsIgnoreCase("VOID")){
+            this.type = type;
+        } else {
+            this.type = "NONE";
+        }
+    }
 
     public void setLobby(Location lobby){ this.lobby =  lobby; }
 
-    public void setPos1(BlockVector pos1){
+    public void setPos1(Location pos1){
         this.pos1 = pos1;
+        if(pos1 != null && pos2 != null){
+            if(pos1.getWorld().getName().equals(pos2.getWorld().getName())){
+                world = pos1.getWorld().getName();
+            }
+        }
     }
 
-    public void setPos2(BlockVector pos2){
+    public void setPos2(Location pos2){
         this.pos2 = pos2;
+        if(pos1 != null && pos2 != null){
+            if(pos1.getWorld().getName().equals(pos2.getWorld().getName())){
+                world = pos1.getWorld().getName();
+            }
+        }
     }
 
     public void setMinPlayers(int minPlayers){
@@ -246,6 +259,14 @@ public class Arena {
 
     public boolean isLobbyValid(){
         return lobby != null && !(lobby.getBlockX() == 0 && lobby.getBlockY() == 0 && lobby.getBlockZ() == 0);
+    }
+
+    public boolean canSetPos1(Location location) {
+        return pos2 == null || location.getWorld().getName().equals(pos2.getWorld().getName());
+    }
+
+    public boolean canSetPos2(Location location) {
+        return pos1 == null || location.getWorld().getName().equals(pos1.getWorld().getName());
     }
 
     public boolean isPos1Valid(){
@@ -361,14 +382,7 @@ public class Arena {
             }
         }
 
-        player.teleport(
-                new Location(
-                        Bukkit.getWorld(Global.INSTANCE.getWorld()),
-                        Global.INSTANCE.getLobby().getX(),
-                        Global.INSTANCE.getLobby().getY(),
-                        Global.INSTANCE.getLobby().getZ()
-                )
-        );
+        player.teleport(Global.INSTANCE.getLobby());
 
         player.sendMessage(Strings.PREFIX + ChatColor.AQUA + "You have left " + ChatColor.WHITE + name + ChatColor.AQUA + " !");
         updateSigns();
@@ -522,11 +536,6 @@ public class Arena {
     }
 
     private void resetPlayers(){
-        Location lobby = new Location(Bukkit.getWorld(world),
-                Global.INSTANCE.getLobby().getX(),
-                Global.INSTANCE.getLobby().getY(),
-                Global.INSTANCE.getLobby().getZ());
-
         for(UUID id : players){
             Player player = Bukkit.getPlayer(id);
 
@@ -535,7 +544,7 @@ public class Arena {
             PlayerInfo info = PlayerInfoManager.INSTANCE.getInfo(id);
             info.restorePlayer();
 
-            player.teleport(lobby);
+            player.teleport(Global.INSTANCE.getLobby());
         }
     }
 
@@ -553,17 +562,14 @@ public class Arena {
         game = new Game(this);
 
         // create runnable to restore the block states
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BlockPlugin.getPlugin(BlockPlugin.class), new Runnable() {
-            @Override
-            public void run() {
-                for(BlockState state : snapshot){
-                    state.update(true,false);
-                }
-
-                arenaState = ArenaState.ENABLED;
-                gameState = GameState.WAITING;
-                updateSigns();
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(BlockPlugin.getPlugin(BlockPlugin.class), () -> {
+            for(BlockState state : snapshot){
+                state.update(true,false);
             }
+
+            arenaState = ArenaState.ENABLED;
+            gameState = GameState.WAITING;
+            updateSigns();
         });
 
         updateSigns();

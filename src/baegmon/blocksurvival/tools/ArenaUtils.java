@@ -6,7 +6,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.util.BlockVector;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -14,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ArenaUtils {
 
-    public static Location getRandomLocation(String world, BlockVector pos1, BlockVector pos2) {
+    public static Location getRandomLocation(String world, Location pos1, Location pos2) {
 
         double minX = Math.min(pos1.getX(), pos2.getX());
         double minY = Math.min(pos1.getY() + 1, pos2.getY() + 1);
@@ -35,7 +34,7 @@ public class ArenaUtils {
         return location;
     }
 
-    public static boolean insideArena(Location playerLocation, BlockVector pos1, BlockVector pos2) {
+    public static boolean insideArena(Location playerLocation, Location pos1, Location pos2) {
         double minX = Math.min(pos1.getX(), pos2.getX());
         double minY = Math.min(pos1.getY(), pos2.getY());
         double minZ = Math.min(pos1.getZ(), pos2.getZ());

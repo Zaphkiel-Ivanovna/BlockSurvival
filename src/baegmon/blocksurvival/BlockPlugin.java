@@ -14,7 +14,10 @@ public class BlockPlugin extends JavaPlugin  {
         this.getServer().getPluginManager().registerEvents(new ArenaListener(), this);
         this.getServer().getPluginManager().registerEvents(new SignListener(), this);
 
-        loadConfiguration();
+        // This line allows the server to finish loading all plugins before the configuration files are loaded
+        // Allows custom worlds plugins such as Multiverse etc to be compatible
+        getServer().getScheduler().scheduleSyncDelayedTask(this, this::loadConfiguration, 20);
+
     }
 
     @Override
